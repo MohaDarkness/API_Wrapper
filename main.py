@@ -1,50 +1,54 @@
-def main():
-    while(1):
-        # We must take arguments somehow since this is an API, for now manually
-        endPoint = input("Enter the endpoint: ")
-        
-        if(endPoint == "list"):
-            countryCode = 0
-            list(countryCode)
-            continue
+from flask import *
+import json
+from PredictHqHandler import predictHqTest
+from OpenWeatherMapHandler import openWeatherMapTest
+from AirLabsHandler import airLabsTest
 
-        if(endPoint == "weather"):
-            eventId = 0
-            weather(eventId)
-            continue
+app = Flask(__name__)
 
-        if(endPoint == "flights"):
-            eventId = 0
-            airportCode = 0
-            flights(eventId, airportCode)
-            continue
-        
-        if(endPoint == "refresh"):
-            refreshDb()
+@app.route('/', methods=["Get"])
+def home():
+    # return a small documentation of how to use the API
+    data_set = {"Page": "Home", "Message":"Mohannad Atmeh's API Wrapping assesment"}
+    json_dump = json.dumps(data_set)
 
-        wrongEndPoint()
+    return json_dump
+
+@app.route('/list/', methods=["Get"])
+def listEvents():
+    countryCode = str(request.args.get('countryCode'))
+
+    data_set = {"Page": "Request", "Message":'List of events must be visible in this route'}
+    json_dump = json.dumps(data_set)
+
+    print(predictHqTest())
+
+    return json_dump
+
+@app.route('/weather/', methods=["Get"])
+def weatherOfEventLocation():
+    eventId = str(request.args.get('eventId'))
+
+    data_set = {"Page": "Request", "Message":'This route tell you the weather of the location of a speccifec event'}
+    json_dump = json.dumps(data_set)
+
+    print(openWeatherMapTest())
+
+    return json_dump
+
+@app.route('/flights/', methods=["Get"])
+def flightsToEventLocation():
+    eventId = str(request.args.get('eventId'))
+    airportCode = str(request.args.get('airportCode'))
+
+    data_set = {"Page": "Request", "Message":'This rout lists flights from the users airport to the event destination'}
+    json_dump = json.dumps(data_set)
+
+    print(airLabsTest())
+
+    return json_dump
 
 
-def list(countryCode):
-    # Some logic
-    pass
-
-def weather(evenCode):
-    # Some logic
-    pass
-
-def flights(eventId, airportCode):
-    # Some logic
-    pass
-
-def wrongEndPoint():
-    # Tell the user that end point does not exists
-    pass
-
-def refreshDb():
-    # Logic to refresh the content of DB by fetching the APIs again
-    assert isinstance()
-    pass
 
 if __name__ == "__main__":
-    main()
+    app.run(port=7777)
