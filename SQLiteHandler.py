@@ -81,7 +81,7 @@ def initialEventFlightTableStructure():
         print("The table is created")
         dummyData = [
             ("1", "ABC", {"FLGHT":"flight"}, {"FLGHT":"flight"} , time.time()),
-            ("2", "AFR", {"FLGHT":"flight"}, {"FLGHT":"flight"} , time.time()),
+            ("2", "AFR", {"FLGHT":"flight"}, {"FLGHT":"flight"} , time.time())
         ]
         cursor.executemany("insert into Event_Flight values (?,?,?,?,?)", dummyData)
         print("The data is inserted into the database")

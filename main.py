@@ -16,7 +16,6 @@ def home():
     # return a small documentation of how to use the API
     data_set = {"Page": "Home", "Message":"Mohannad Atmeh's API Wrapping assesment"}
     json_dump = json.dumps(data_set)
-    SQLiteHandler.insertData()
     SQLiteHandler.fetchAllData()
 
     return json_dump

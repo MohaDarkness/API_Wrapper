@@ -23,7 +23,7 @@ def getFullList(countryIsoCode):
             "Accept": "application/json"
         },
         params={
-            "id": f"{defaultID}"
+            # "id": f"{defaultID}"
         }
     )
     sendToDatabase(response.json())
