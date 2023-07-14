@@ -17,13 +17,16 @@ def sendToDatabase(dataDict):
 
 def getFullList(countryIsoCode):    
     response = requests.get(
-        url=f"https://api.predicthq.com/v1/events?country={countryIsoCode.upper()}&sort=-rank&limit=10",
+        url=f"https://api.predicthq.com/v1/events",
         headers={
             "Authorization": f'Bearer {API_KEY}',
             "Accept": "application/json"
         },
         params={
-            # "id": f"{defaultID}"
+            'country':countryIsoCode.upper(),
+            "sort":"rank",
+            "limit":"10"
+
         }
     )
     sendToDatabase(response.json())
@@ -38,7 +41,7 @@ def getEventById(eventId):
             "Accept": "application/json"
         },
         params={
-            "id": f"{defaultID}"
+            "id": eventId
         }
     )
     sendToDatabase(response.json())

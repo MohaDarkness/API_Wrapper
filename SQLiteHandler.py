@@ -17,23 +17,9 @@ def initialEventsTableStructure():
     cursor = connection.cursor()
     try:
         fetchedData = cursor.execute("SELECT * FROM Events")
-        for row in fetchedData:
-            print(row)
-        print("The data should be printed")
 
     except:
         cursor.execute("CREATE TABLE Events (eventId TEXT, country TEXT, eventData JSON, time INTEGER)")
-        print("The table is created")
-        dummyData = [
-            ("1", "JO", json.dumps([{"name":"Race", "time":"10:00"}]), time.time()),
-            ("2", "US", json.dumps([{"name":"Dance Party", "time":"15:30"}]), time.time()),
-        ]
-        cursor.executemany("insert into Events values (?,?,?,?)", dummyData)
-        
-
-        fetchedData = cursor.execute("SELECT * FROM Events")
-        for row in fetchedData:
-            print(row)
         
     
     closeConnection(connection)
@@ -44,24 +30,10 @@ def initialEventsWeatherTableStructure():
 
     try:
         fetchedData = cursor.execute("SELECT * FROM Events_Weather")
-        for row in fetchedData:
-            print(row)
-        
 
     except:
         cursor.execute("CREATE TABLE Events_Weather (eventId TEXT, weather JSON, time INTEGER)")
-        print("The table is created")
-        dummyData = [
-            ("1",{"WEATHER":"weather"} , time.time()),
-            ("2", {"WEATHER":"weather"} , time.time()),
-        ]
-        cursor.executemany("insert into Events_Weather values (?,?,?)", dummyData)
-        print("The data is inserted into the database")
-
-        fetchedData = cursor.execute("SELECT * FROM Events")
-        for row in fetchedData:
-            print(row)
-        print("Here is the inserted data!")
+        
     
     closeConnection(connection)
 
@@ -72,24 +44,10 @@ def initialEventFlightTableStructure():
 
     try:
         fetchedData = cursor.execute("SELECT * FROM Event_Flight")
-        for row in fetchedData:
-            print(row)
         
 
     except:
         cursor.execute("CREATE TABLE Event_Flight (eventId TEXT, depIATA TEXT, goFligh JSON, backFligh JSON, time INTEGER)")
-        print("The table is created")
-        dummyData = [
-            ("1", "ABC", {"FLGHT":"flight"}, {"FLGHT":"flight"} , time.time()),
-            ("2", "AFR", {"FLGHT":"flight"}, {"FLGHT":"flight"} , time.time())
-        ]
-        cursor.executemany("insert into Event_Flight values (?,?,?,?,?)", dummyData)
-        print("The data is inserted into the database")
-
-        fetchedData = cursor.execute("SELECT * FROM Event_Flight")
-        for row in fetchedData:
-            print(row)
-        print("Here is the inserted data!")
     
     closeConnection(connection)
 
