@@ -76,7 +76,7 @@ def insertEventFlight(id, userIATA, goFlight, backFlight):
 
 
 def insertEventWeather(eventId, weather):
-    dataToInsert = (eventId, weather, time.time())
+    dataToInsert = (eventId, json.dumps(weather), time.time())
     connection = makeConnection()
     cursor = connection.cursor()
     cursor.execute("insert into Events_Weather values (?,?,?)", dataToInsert)

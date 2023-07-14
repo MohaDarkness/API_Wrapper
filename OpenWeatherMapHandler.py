@@ -12,15 +12,14 @@ def getWeather(lat, lon, eventId):
         url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&exclude=hourly,daily&appid={API_KEY}"
     )
 
-    sendToDatabase(eventId, response)
+    sendToDatabase(eventId, response.json())
     return response.json()
 
 
 def getWeatherByEventData(jsonData):
-    print(type(jsonData))
-    dataDict = json.loads(jsonData)
+    dataDict = json.loads(jsonData[0])
     eventId = dataDict["id"]
-    geo = dataDict['geo']
+    geo = dataDict['geo']['geometry']
     lat = geo['coordinates'][0]
     lon = geo['coordinates'][1]
     return getWeather(lat, lon, eventId)
