@@ -17,9 +17,9 @@ def getWeather(lat, lon, eventId):
 
 
 def getWeatherByEventData(jsonData):
-    dataDict = json.loads(jsonData[0])
-    eventId = dataDict["id"]
-    geo = dataDict['geo']['geometry']
-    lat = geo['coordinates'][0]
-    lon = geo['coordinates'][1]
+    eventId = jsonData["id"]
+    print("This is json data:", jsonData)
+    location = jsonData['location']
+    lat = location[0]
+    lon = location[1]
     return getWeather(lat, lon, eventId)

@@ -36,7 +36,9 @@ def getFlightByIATAs(eventId, usersIATA, destIATA):
 
 
 def getFLightByEventData(event, usersIATA):
-    json.dumps(event)
+    print(event)
+    # event = json.loads(event)
+    print("this is 'event' data type:", type(event))
     eventId = event['id']
     geo = event['geo']
     lat = geo['coordinates'][0]

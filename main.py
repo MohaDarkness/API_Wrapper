@@ -44,17 +44,17 @@ def weatherOfEventLocation():
         eventId = str(request.args.get('eventId'))
 
         databaseResult = SQLiteHandler.findWeatherByEvent(eventId)
-        if len(databaseResult) > 0:
+        if databaseResult != None:
           return jsonify(databaseResult), 200
         
-        databaseResult = SQLiteHandler.findEventByEventId(eventId)
-        if len(databaseResult) > 0:
-            return OpenWeatherMapHandler.getWeatherByEventData(databaseResult[0]), 200
+        event = SQLiteHandler.findEventByEventId(eventId)
+        if event != None:
+            return OpenWeatherMapHandler.getWeatherByEventData(event), 200
         
         PredictHqHandler.getEventById(eventId)
-        databaseResult = SQLiteHandler.findEventByEventId(eventId)
-        if len(databaseResult) > 0:
-            return OpenWeatherMapHandler.getWeatherByEventData(databaseResult[0]), 200
+        event = SQLiteHandler.findEventByEventId(eventId)
+        if event != None:
+            return OpenWeatherMapHandler.getWeatherByEventData(event), 200
         else:
             return Exceptions.getError('InvalidEventId')
 
@@ -72,14 +72,14 @@ def flightsToEventLocation():
             return jsonify(databaseResult), 200
         
         databaseResult = SQLiteHandler.findEventByEventId(eventId)
-        if len(databaseResult) > 0:
-            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult[0], airportCode)
+        if databaseResult != None:
+            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
             return goFlight #the back flight is not returned!!!
                 
         PredictHqHandler.getEventById(eventId)
         databaseResult = SQLiteHandler.findEventByEventId(eventId)
-        if len(databaseResult) > 0:
-            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult[0], airportCode)
+        if databaseResult != None:
+            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
             return goFlight #the back flight is not returned!!!
         else:
             return Exceptions.getError('InvalidEventId')
