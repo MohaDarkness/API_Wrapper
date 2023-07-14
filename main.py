@@ -29,7 +29,7 @@ def listEvents():
             return Exceptions.getError('CountryIsoCodeNotCorrect')
         
         databaseResults = SQLiteHandler.findEventsByCountryCode(countryCode)
-        if len(databaseResults) > 0:
+        if databaseResults != None:
           return jsonify(databaseResults), 200
 
         return jsonify(PredictHqHandler.getFullList(countryCode)), 200

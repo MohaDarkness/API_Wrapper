@@ -94,38 +94,29 @@ def findEventsByCountryCode(countryCode):
     cursor = connection.cursor()
     result_list = cursor.execute(f"SELECT eventData FROM Events WHERE country = \"{countryCode.upper()}\" AND time>{time.time() - 21600}")
     result_list = [json.loads(row[0]) for row in cursor.fetchall()]
+    result_list = None if len(result_list) == 0 else result_list
     closeConnection(connection)
     return result_list
 
-
-def findEventByEventId(eventId):
+def findAnElement(query):
     connection = makeConnection()
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    cursor.execute(f"SELECT eventData FROM Events WHERE eventId = \"{eventId}\" AND time>{time.time() - 21600}")
-    result_list = [json.loads(row[0]) for row in cursor.fetchall()]
-    result_list = None if result_list == [] else result_list[0]
+    cursor.execute(query)
+    result = [json.loads(row[0]) for row in cursor.fetchall()]
+    result = None if result == [] else result[0]
     closeConnection(connection)
-    return result_list
+    return result
+
+def findEventByEventId(eventId):
+    return findAnElement(f"SELECT eventData FROM Events WHERE eventId = \"{eventId}\" AND time>{time.time() - 21600}")
 
 
 def findWeatherByEvent(eventId):
-    connection = makeConnection()
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT weather FROM Events_Weather WHERE eventId = \"{eventId}\" AND time>{time.time() - 21600}")
-    result_list = [json.loads(row[0]) for row in cursor.fetchall()]
-    result_list = None if result_list == [] else result_list[0]
-    closeConnection(connection)
-    return result_list
+    return findAnElement(f"SELECT weather FROM Events_Weather WHERE eventId = \"{eventId}\" AND time>{time.time() - 21600}")
 
 def findFlight(eventId, IATA):
-    connection = makeConnection()
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT flightsSchedule FROM Event_Flight WHERE eventId = \"{eventId}\" AND depIATA =\"{IATA}\" AND time>{time.time() - 21600}")
-    result_list = [json.loads(row[0]) for row in cursor.fetchall()]
-    result_list = None if result_list == [] else result_list[0]
-    closeConnection(connection)
-    return result_list
+    return findAnElement(f"SELECT flightsSchedule FROM Event_Flight WHERE eventId = \"{eventId}\" AND depIATA =\"{IATA}\" AND time>{time.time() - 21600}")
 
 
 # test wise #########
