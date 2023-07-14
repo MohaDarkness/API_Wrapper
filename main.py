@@ -12,7 +12,6 @@ app = Flask(__name__)
 
 @app.route('/', methods=["Get"])
 def home():
-    print(set(request.args))
     # return a small documentation of how to use the API
     data_set = {"Page": "Home", "Message":"Mohannad Atmeh's API Wrapping assesment"}
     json_dump = json.dumps(data_set)
@@ -68,12 +67,13 @@ def flightsToEventLocation():
         airportCode = str(request.args.get('airportCode'))
 
         databaseResult = SQLiteHandler.findFlight(eventId, airportCode)
-        if len(databaseResult) > 0:
+        if databaseResult != None:
             return jsonify(databaseResult), 200
         
         databaseResult = SQLiteHandler.findEventByEventId(eventId)
         if databaseResult != None:
-            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
+            # goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
+            return AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
             return goFlight #the back flight is not returned!!!
                 
         PredictHqHandler.getEventById(eventId)

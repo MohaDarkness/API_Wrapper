@@ -4,45 +4,49 @@ from SQLiteHandler import insertEventFlight
 
 API_KEY = "98edecdb-9074-4b95-83b6-c003feb19e58"
 
-def sendDatatoDatabase(eventId, userIATA, goFlight, backFlight):
-    insertEventFlight(eventId, userIATA, goFlight, backFlight)
+def sendDatatoDatabase(eventId, userIATA, flightsSchedule):
+    insertEventFlight(eventId, userIATA, flightsSchedule)
 
 
 
-def getFlightByIATAs(eventId, usersIATA, destIATA):
+def getFlightByICAOs(usersICAO, destICAOs, dep = True):
+    d = "dep" if dep else "arr"
     params = {
         'api_key': API_KEY,
-        'dep_iata': usersIATA,
-        'arr_iata': destIATA,
+        f'{d}_icao': usersICAO,
     }
-    method = 'ping'
-    api_base = 'http://airlabs.co/api/v9/schedules'
-    api_result = requests.get(api_base+method, params)
-    goFlight = api_result.json()
     
-    params = {
-        'api_key': API_KEY,
-        'dep_iata': destIATA,
-        'arr_iata': usersIATA,
-    }
-    method = 'ping'
-    api_base = 'http://airlabs.co/api/v9/schedules'
-    api_result = requests.get(api_base+method, params)
-    backFlight = api_result.json()
+    method = 'schedules.json'
+    api_base = 'http://airlabs.co/api/v9/'
+    api_result = requests.get(api_base+method, params).json()
+    # return api_result
+    flights = api_result["response"]
+    flightSchedule = {"flight_found":False, "data":None}
+    for flight in flights:
+        try:
+            if flight["arr_icao"] in destICAOs:
+                flightSchedule["flight_found"] = True
+                flightSchedule["data"] = flight
+                break
+        except:
+            continue
 
-    sendDatatoDatabase(eventId, usersIATA, goFlight, backFlight)
+    return flightSchedule
 
-    return (goFlight, backFlight)
+def findGoAndBackFlights(eventId, usersICAO, destICAOS):
+    flightsSchedule = {"goFlight":None, "backFlight":None}
+    flightsSchedule["goFlight"] = getFlightByICAOs(usersICAO, destICAOS, True)
+    flightsSchedule["backFlight"] = getFlightByICAOs(usersICAO, destICAOS, False)
+    sendDatatoDatabase(eventId, usersICAO, flightsSchedule)
+
+    return flightsSchedule
 
 
-def getFLightByEventData(event, usersIATA):
-    print(event)
-    # event = json.loads(event)
-    print("this is 'event' data type:", type(event))
+def getFLightByEventData(event, usersICAO):
     eventId = event['id']
-    geo = event['geo']
-    lat = geo['coordinates'][0]
-    lng = geo['coordinates'][1]
+    location = event["location"]
+    lng = location[0]
+    lat = location[1]
 
     params = {
         'api_key': API_KEY,
@@ -50,11 +54,17 @@ def getFLightByEventData(event, usersIATA):
         'lng': lng,
         'distance':200
     }
-    method = 'ping'
-    api_base = 'http://airlabs.co/api/v9/nearby'
+    method = 'nearby.json'
+    api_base = 'http://airlabs.co/api/v9/'
     api_result = requests.get(api_base+method, params)
 
     api_response = api_result.json()
-    destinationIATA = api_response["airports"][0]['iata_code']
-    return getFlightByIATAs(eventId, usersIATA, destinationIATA)
+    jsonAirports = api_response["response"]["airports"]
+    destAirports = []
+    for airport in jsonAirports:
+        try:
+            destAirports.append(airport["icao_code"])
+        except:
+            continue
+    return findGoAndBackFlights(eventId, usersICAO, destAirports)
 

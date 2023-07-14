@@ -52,7 +52,7 @@ def initialEventFlightTableStructure():
         
 
     except:
-        cursor.execute("CREATE TABLE Event_Flight (eventId TEXT, depIATA TEXT, goFlight JSON, backFlight JSON, time INTEGER)")
+        cursor.execute("CREATE TABLE Event_Flight (eventId TEXT, depIATA TEXT, flightsSchedule JSON, time INTEGER)")
         print("@@@SQLite: Table 'Event_Flight' had been created..")
     
     closeConnection(connection)
@@ -67,18 +67,17 @@ def initialDbStructure():
 
 def insertEvent(id, country, data):
     dataToInsert = (id, country, json.dumps(data), time.time())
-    print("This is data type in insertEvent: ", type(data))
     connection = makeConnection()
     cursor = connection.cursor()
     cursor.execute("insert into Events values (?,?,?,?)", dataToInsert)
     closeConnection(connection)
 
 
-def insertEventFlight(id, userIATA, goFlight, backFlight):
-    dataToInsert = (id, userIATA, goFlight, backFlight, time.time())
+def insertEventFlight(id, userIATA, flightsSchedule):
+    dataToInsert = (id, userIATA, json.dumps(flightsSchedule), time.time())
     connection = makeConnection()
     cursor = connection.cursor()
-    cursor.execute("insert into Event_Flight values (?,?,?,?,?)", dataToInsert)
+    cursor.execute("insert into Event_Flight values (?,?,?,?)", dataToInsert)
     closeConnection(connection)
 
 
@@ -107,7 +106,6 @@ def findEventByEventId(eventId):
     result_list = [json.loads(row[0]) for row in cursor.fetchall()]
     result_list = None if result_list == [] else result_list[0]
     closeConnection(connection)
-    print("@@@SQLiteHandler: This is result_list at findEventByEventId: ", result_list)
     return result_list
 
 
@@ -123,8 +121,9 @@ def findWeatherByEvent(eventId):
 def findFlight(eventId, IATA):
     connection = makeConnection()
     cursor = connection.cursor()
-    cursor.execute(f"SELECT goFlight, backFlight FROM Event_Flight WHERE eventId = \"{eventId}\" AND depIATA =\"{IATA}\" AND time>{time.time() - 21600}")
-    result_list = [list(row) for row in cursor.fetchall()]
+    cursor.execute(f"SELECT flightsSchedule FROM Event_Flight WHERE eventId = \"{eventId}\" AND depIATA =\"{IATA}\" AND time>{time.time() - 21600}")
+    result_list = [json.loads(row[0]) for row in cursor.fetchall()]
+    result_list = None if result_list == [] else result_list[0]
     closeConnection(connection)
     return result_list
 
