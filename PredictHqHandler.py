@@ -12,8 +12,7 @@ def sendToDatabase(dataDict):
     for resDict in resultsList:
         id = resDict['id']
         country = resDict['country']
-        jsonData = json.dumps(resDict)
-        insertEvent(id, country, jsonData)
+        insertEvent(id, country, resDict)
 
 def getFullList(countryIsoCode):    
     response = requests.get(
