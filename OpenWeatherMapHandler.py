@@ -18,7 +18,6 @@ def getWeather(lat, lon, eventId):
 
 def getWeatherByEventData(jsonData):
     eventId = jsonData["id"]
-    print("This is json data:", jsonData)
     location = jsonData['location']
     lat = location[0]
     lon = location[1]
