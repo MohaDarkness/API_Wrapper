@@ -1,6 +1,6 @@
 import requests
 import json
-from SQLiteHandler import insertEventFlight
+from database.SQLiteHandler import insertEventFlight
 
 API_KEY = "98edecdb-9074-4b95-83b6-c003feb19e58"
 

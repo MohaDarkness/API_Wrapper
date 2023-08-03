@@ -1,6 +1,6 @@
 import requests
 import json
-from SQLiteHandler import insertEvent
+from ..database.SQLiteHandler import insertEvent
 
 API_KEY = "EqpJf87ypBIW6cbbhkXRj_HOyxkNezMRw66NdI86"
 defaultID = "5uRg7CqGu7DTtu4Rfk"

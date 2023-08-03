@@ -1,6 +1,6 @@
 import requests
 import json
-from SQLiteHandler import insertEventWeather
+from database.SQLiteHandler import insertEventWeather
 
 API_KEY = "f22892654725839a44ff6db985f0b151"
 

@@ -1,10 +1,10 @@
 from flask import *
 import json
-import PredictHqHandler
-import OpenWeatherMapHandler
-import AirLabsHandler
-import SQLiteHandler
-import Exceptions
+import APIs.PredictHqHandler as PredictHq
+import APIs.OpenWeatherMapHandler as OpenWeatherMap
+import APIs.AirLabsHandler as AirLabs
+import database.SQLiteHandler as SQLiteHandler
+import ErrorHandling.Exceptions as Exceptions
 
 app = Flask(__name__)
 
@@ -12,12 +12,11 @@ app = Flask(__name__)
 
 @app.route('/', methods=["Get"])
 def home():
-    # return a small documentation of how to use the API
-    data_set = {"Page": "Home", "Message":"Mohannad Atmeh's API Wrapping assesment"}
-    json_dump = json.dumps(data_set)
-    SQLiteHandler.fetchAllData()
+    data_set = {"Description": "Wrapping 'PredictHq/events' & 'OpenWeatherMap' & 'AirLabs' into this one API you're using.",
+                 "Creator":"https://github.com/MohaDarkness/API_Wrapper",
+                 "Documentation":"https://github.com/MohaDarkness/API_Wrapper#readme"}
 
-    return json_dump
+    return jsonify(data_set)
 
 @app.route('/list/', methods=["Get"])
 def listEvents():
@@ -25,14 +24,14 @@ def listEvents():
     if(setOfArgs.issubset(set(request.args))):
         countryCode = str(request.args.get('countryCode'))
 
-        if not PredictHqHandler.isIsoCountryCode(countryCode):
+        if not PredictHq.isIsoCountryCode(countryCode):
             return Exceptions.getError('CountryIsoCodeNotCorrect')
         
         databaseResults = SQLiteHandler.findEventsByCountryCode(countryCode)
         if databaseResults != None:
           return jsonify(databaseResults), 200
 
-        return jsonify(PredictHqHandler.getFullList(countryCode)), 200
+        return jsonify(PredictHq.getFullList(countryCode)), 200
     
     return Exceptions.getError('RequiredParametersNotProvided')
 
@@ -48,12 +47,12 @@ def weatherOfEventLocation():
         
         event = SQLiteHandler.findEventByEventId(eventId)
         if event != None:
-            return OpenWeatherMapHandler.getWeatherByEventData(event), 200
+            return OpenWeatherMap.getWeatherByEventData(event), 200
         
-        PredictHqHandler.getEventById(eventId)
+        PredictHq.getEventById(eventId)
         event = SQLiteHandler.findEventByEventId(eventId)
         if event != None:
-            return OpenWeatherMapHandler.getWeatherByEventData(event), 200
+            return OpenWeatherMap.getWeatherByEventData(event), 200
         else:
             return Exceptions.getError('InvalidEventId')
 
@@ -72,15 +71,13 @@ def flightsToEventLocation():
         
         databaseResult = SQLiteHandler.findEventByEventId(eventId)
         if databaseResult != None:
-            # goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
-            return AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
-            return goFlight #the back flight is not returned!!!
-                
-        PredictHqHandler.getEventById(eventId)
+            return AirLabs.getFLightByEventData(databaseResult, airportCode)
+                    
+        PredictHq.getEventById(eventId)
         databaseResult = SQLiteHandler.findEventByEventId(eventId)
         if databaseResult != None:
-            goFlight, backFlight = AirLabsHandler.getFLightByEventData(databaseResult, airportCode)
-            return goFlight #the back flight is not returned!!!
+            return AirLabs.getFLightByEventData(databaseResult, airportCode)
+           
         else:
             return Exceptions.getError('InvalidEventId')
         
